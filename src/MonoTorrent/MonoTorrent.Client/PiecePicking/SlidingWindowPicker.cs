@@ -69,8 +69,7 @@ namespace MonoTorrent.Client
             get { return this.highPrioritySetStart; }
             set
             {
-                if (this.highPrioritySetStart < value)
-                    this.highPrioritySetStart = value;
+                this.highPrioritySetStart = value;
             }
         }
 

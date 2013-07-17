@@ -48,7 +48,7 @@ namespace MonoTorrent.Client
         #region Old
         // For every 10 kB/sec upload a peer has, we request one extra piece above the standard amount him
         internal const int BonusRequestPerKb = 10;  
-        internal const int NormalRequestAmount = 2;
+        internal const int NormalRequestAmount = 6;
         internal const int MaxEndGameRequests = 2;
 
         public event EventHandler<BlockEventArgs> BlockReceived;
@@ -75,7 +75,7 @@ namespace MonoTorrent.Client
         PiecePicker picker;
         BitField unhashedPieces;
 
-        internal PiecePicker Picker
+        public PiecePicker Picker
         {
             get { return picker; }
         }
@@ -178,7 +178,7 @@ namespace MonoTorrent.Client
                         id.Enqueue(msg);
                     else
                         break;
-                } 
+                }
             }
 
             if (!id.IsChoking || (id.SupportsFastPeer && id.IsAllowedFastPieces.Count > 0))
@@ -230,6 +230,22 @@ namespace MonoTorrent.Client
         internal int CurrentRequestCount()
         {
             return (int)ClientEngine.MainLoop.QueueWait((MainLoopJob) delegate { return Picker.CurrentRequestCount(); });
+        }
+
+        public T GetPicker<T>() where T: PiecePicker
+        {
+            if (picker is T)
+                return (T)picker;
+
+            var p = picker;
+            
+            while ((p = p.BasePicker) != null)
+            {
+                if (p is T)
+                    return (T)p;
+            }
+
+            return null;
         }
     }
 }
