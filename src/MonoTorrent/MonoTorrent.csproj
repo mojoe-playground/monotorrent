@@ -92,6 +92,7 @@
     <Compile Include="BanLists\BanList.cs" />
     <Compile Include="BanLists\ListParser.cs" />
     <Compile Include="BanLists\RangeCollection.cs" />
+    <Compile Include="LogManager.cs" />
     <Compile Include="MonoTorrent.Client\ConnectionListeners\LocalPeerListener.cs" />
     <Compile Include="MonoTorrent.Client\ConnectionListeners\UdpListener.cs" />
     <Compile Include="MonoTorrent.Client\EventArgs\LocalPeersAdded.cs" />
@@ -370,7 +371,5 @@
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="MonoTorrent.Client\NetworkIO\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
