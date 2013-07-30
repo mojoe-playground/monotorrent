@@ -48,6 +48,7 @@ namespace MonoTorrent.Client
         private bool requested;
         private bool received;
         private bool written;
+        private DateTime whenRequested;
 
         #endregion Private Fields
 
@@ -97,9 +98,8 @@ namespace MonoTorrent.Client
         public bool RequestTimedOut
         {
             get
-            { // 60 seconds timeout for a request to fulfill
-                return !Received && requestedOff != null &&
-                       (DateTime.Now - requestedOff.LastMessageReceived) > TimeSpan.FromMinutes(1);
+            {   // 4 seconds timeout for a request to fulfill
+                return !Received && requestedOff != null && (DateTime.Now - requestedOff.LastMessageReceived) > TimeSpan.FromSeconds(4);
             }
         }
 
@@ -152,6 +152,7 @@ namespace MonoTorrent.Client
 
         internal RequestMessage CreateRequest(PeerId id)
         {
+            whenRequested = DateTime.Now;
             Requested = true;
             RequestedOff = id;
             RequestedOff.AmRequestingPiecesCount++;

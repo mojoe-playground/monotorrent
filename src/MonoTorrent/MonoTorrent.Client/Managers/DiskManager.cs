@@ -14,6 +14,7 @@ namespace MonoTorrent.Client
 
     public partial class DiskManager : IDisposable
     {
+        private static readonly ILogger logger = LogManager.GetLogger();
         private static MainLoop IOLoop = new MainLoop("Disk IO");
         #region Member Variables
 
@@ -106,6 +107,7 @@ namespace MonoTorrent.Client
                     }
                     catch (Exception ex)
                     {
+                        logger.Error("Write error: {0}", ex.Message);
                         if (write.Manager != null)
                             SetError(write.Manager, Reason.WriteFailure, ex);
                     }
@@ -124,6 +126,7 @@ namespace MonoTorrent.Client
                     }
                     catch (Exception ex)
                     {
+                        logger.Error("Read error: {0}", ex.Message);
                         if(read.Manager != null)
                             SetError(read.Manager, Reason.ReadFailure, ex);
                     }
@@ -159,6 +162,7 @@ namespace MonoTorrent.Client
 				}
                 catch (Exception ex)
                 {
+                    logger.Error("Close file streams error: {0}", ex.Message);
                     SetError (manager, Reason.WriteFailure, ex);
                 }
 				finally
@@ -237,6 +241,7 @@ namespace MonoTorrent.Client
                 }
                 catch (Exception ex)
                 {
+                    logger.Error("Flush error: {0}", ex.Message);
                     SetError(manager, Reason.WriteFailure, ex);
                 }
             });

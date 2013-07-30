@@ -42,6 +42,8 @@ namespace MonoTorrent.Client
 {
     abstract class Mode
     {
+        private static readonly ILogger logger = LogManager.GetLogger();
+
         int webseedCount;
         private TorrentManager manager;
 
@@ -244,7 +246,7 @@ namespace MonoTorrent.Client
         protected virtual void HandleUnchokeMessage(PeerId id, UnchokeMessage message)
         {
             id.IsChoking = false;
-
+            logger.Info("Peer {0} unchokes us, requesting data", id);
             // Add requests to the peers message queue
             manager.PieceManager.AddPieceRequests(id);
         }

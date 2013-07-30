@@ -51,6 +51,8 @@ namespace MonoTorrent.Client
     /// </summary>
     public class ConnectionManager
     {
+        private static readonly ILogger logger = LogManager.GetLogger();
+
         #region Events
 
         public event EventHandler<AttemptConnectionEventArgs> BanPeer;
@@ -163,6 +165,8 @@ namespace MonoTorrent.Client
             if (connection == null)
                 return;
 
+            logger.Info("Connecting to {0}", peer);
+
             peer.LastConnectionAttempt = DateTime.Now;
             AsyncConnectState c = new AsyncConnectState(manager, peer, connection);
             pendingConnects.Add(c);
@@ -187,7 +191,7 @@ namespace MonoTorrent.Client
                 connect.Manager.Peers.ConnectingToPeers.Remove(connect.Peer);
                 if (!succeeded)
                 {
-                    Logger.Log(null, "ConnectionManager - Failed to connect{0}", connect.Peer);
+                    logger.Error("Failed to connect {0}", connect.Peer);
 
                     connect.Manager.RaiseConnectionAttemptFailed(
                         new PeerConnectionFailedEventArgs(connect.Manager, connect.Peer, Direction.Outgoing, "EndCreateConnection"));
@@ -202,15 +206,15 @@ namespace MonoTorrent.Client
                     id.Connection = connect.Connection;
                     connect.Manager.Peers.ActivePeers.Add(connect.Peer);
 
-                    Logger.Log(id.Connection, "ConnectionManager - Connection opened");
+                    logger.Info("Connection opened {0}", connect.Peer);
 
                     ProcessFreshConnection(id);
                 }
             }
 
-            catch (Exception)
+            catch (Exception x)
             {
-                // FIXME: Do nothing now?
+                logger.Error("Connect create error: {0}", x.Message);
             }
             finally
             {
@@ -239,8 +243,9 @@ namespace MonoTorrent.Client
                 // Baseline the time the last block was received
                 id.LastBlockReceived = DateTime.Now;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.Error("Process fresh connection error: {0}", ex.Message);
                 id.TorrentManager.RaiseConnectionAttemptFailed(
                     new PeerConnectionFailedEventArgs(id.TorrentManager, id.Peer, Direction.Outgoing, "ProcessFreshConnection: failed to encrypt"));
 
@@ -471,12 +476,12 @@ namespace MonoTorrent.Client
 
                 if (id.TorrentManager.Peers.ActivePeers.Contains(id.Peer))
                 {
-                    Logger.Log(id.Connection, "ConnectionManager - Already connected to peer");
+                    logger.Error("Already connected to peer {0}", id.Peer);
                     id.Connection.Dispose();
                     return;
                 }
 
-                Logger.Log(id.Connection, "ConnectionManager - Incoming connection fully accepted");
+                logger.Info("Incoming connection fully accepted {0}, total {1}", id.Peer, OpenConnections);
                 id.TorrentManager.Peers.AvailablePeers.Remove(id.Peer);
                 id.TorrentManager.Peers.ActivePeers.Add(id.Peer);
                 id.TorrentManager.Peers.ConnectedPeers.Add(id);
