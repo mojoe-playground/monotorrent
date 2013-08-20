@@ -79,8 +79,7 @@ namespace MonoTorrent.Client.PieceWriters
                 throw new ArgumentOutOfRangeException("offset");
 
             TorrentFileStream stream = GetStream(file, FileAccess.ReadWrite);
-            //logger.Info("Write pos: {0}, {1}", offset, count);
-
+            
             _stopwatch.Reset();
             _stopwatch.Start();
 

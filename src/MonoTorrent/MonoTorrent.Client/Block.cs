@@ -48,7 +48,6 @@ namespace MonoTorrent.Client
         private bool requested;
         private bool received;
         private bool written;
-        private DateTime whenRequested;
 
         #endregion Private Fields
 
@@ -152,7 +151,6 @@ namespace MonoTorrent.Client
 
         internal RequestMessage CreateRequest(PeerId id)
         {
-            whenRequested = DateTime.Now;
             Requested = true;
             RequestedOff = id;
             RequestedOff.AmRequestingPiecesCount++;

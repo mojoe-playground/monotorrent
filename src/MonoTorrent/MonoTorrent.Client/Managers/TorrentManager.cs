@@ -47,6 +47,8 @@ namespace MonoTorrent.Client
 {
     public class TorrentManager : IDisposable, IEquatable<TorrentManager>
     {
+        private static readonly ILogger Logger = LogManager.GetLogger();
+
         #region Events
 
         public event EventHandler<PeerConnectionEventArgs> PeerConnected;
@@ -146,6 +148,7 @@ namespace MonoTorrent.Client
                 if (oldMode != null)
                     RaiseTorrentStateChanged(new TorrentStateChangedEventArgs(this, oldMode.State, mode.State));
                 mode.Tick(0);
+                Logger.Info("Torrent {0} is in {1}", HasMetadata ? Torrent.Name : InfoHash.ToString(), mode.GetType().Name);
 			}
         }
 
@@ -288,7 +291,11 @@ namespace MonoTorrent.Client
         public Torrent Torrent
         {
             get { return this.torrent; }
-            internal set { torrent = value; }
+            internal set 
+            { 
+                torrent = value;
+                OnMetadataReceived();
+            }
         }
 
 
@@ -333,6 +340,18 @@ namespace MonoTorrent.Client
 		}
 
         #endregion
+
+        /// <summary>
+        /// Occurs when torrent manager receives metadata from the DHT
+        /// This event is not fired if torren is loaded from other source
+        /// </summary>
+        public event EventHandler MetadataReceived;
+
+        protected virtual void OnMetadataReceived()
+        {
+            var handler = MetadataReceived;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
 
         #region Constructors
 
@@ -675,9 +694,22 @@ namespace MonoTorrent.Client
 #endif
 
         /// <summary>
-        /// Stops the TorrentManager
+        /// Stops the TorrentManager and waits until it will be stopped
         /// </summary>
         public void Stop()
+        {
+            BeginStop();
+
+            while (State != TorrentState.Stopped)
+            {
+                Thread.Sleep(10);
+            }
+        }
+
+        /// <summary>
+        /// Stops the TorrentManager
+        /// </summary>
+        public void BeginStop()
         {
             if (State == TorrentState.Error)
             {
