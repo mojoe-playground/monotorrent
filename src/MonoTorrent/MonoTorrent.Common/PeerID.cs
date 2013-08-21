@@ -89,6 +89,7 @@ namespace MonoTorrent.Common
         Swiftbit,
         SwarmScope,
         Shareaza,
+        Thunder,
         TorrentDotNET,
         Transmission,
         Tribler,
@@ -109,6 +110,8 @@ namespace MonoTorrent.Common
     /// </summary>
     public struct Software
     {
+        private static readonly ILogger Logger = LogManager.GetLogger();
+
         static readonly Regex bow = new Regex("-BOWA");
         static readonly Regex brahms = new Regex("M/d-/d-/d--");
         static readonly Regex bitlord = new Regex("exbc..LORD");
@@ -274,6 +277,10 @@ namespace MonoTorrent.Common
                         this.client = Common.Client.Swiftbit;
                         break;
 
+                    case ("SD"):
+                        this.client = Common.Client.Thunder;
+                        break;
+
                     case ("SS"):
                         this.client = Common.Client.SwarmScope;
                         break;
@@ -311,7 +318,7 @@ namespace MonoTorrent.Common
                         break;
 
                     default:
-                        System.Diagnostics.Trace.WriteLine("Unsupported standard style: " + m.Groups[2].Value);
+                        Logger.Info("Unsupported standard style: {0}", m.Groups[2].Value);
                         this.client = Client.Unknown;
                         break;
                 }

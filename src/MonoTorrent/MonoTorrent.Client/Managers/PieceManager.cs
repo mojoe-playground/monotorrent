@@ -45,7 +45,7 @@ namespace MonoTorrent.Client
     /// </summary>
     public class PieceManager 
     {
-        private static readonly ILogger logger = LogManager.GetLogger();
+        private static readonly ILogger Logger = LogManager.GetLogger();
 
         #region Old
         // For every 10 kB/sec upload a peer has, we request one extra piece above the standard amount him
@@ -112,7 +112,7 @@ namespace MonoTorrent.Client
 					if (!piece.AllBlocksWritten)
 						return;
 
-                    logger.Info("Piece downloaded: {0}", piece.Index);
+                    Logger.Info("Piece downloaded: {0}", piece.Index);
 
 					// Hashcheck the piece as we now have all the blocks.
                     id.Engine.DiskManager.BeginGetHash (id.TorrentManager, piece.Index, delegate (object o) {

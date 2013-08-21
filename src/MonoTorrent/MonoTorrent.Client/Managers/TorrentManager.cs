@@ -294,7 +294,6 @@ namespace MonoTorrent.Client
             internal set 
             { 
                 torrent = value;
-                OnMetadataReceived();
             }
         }
 
@@ -347,7 +346,7 @@ namespace MonoTorrent.Client
         /// </summary>
         public event EventHandler MetadataReceived;
 
-        protected virtual void OnMetadataReceived()
+        internal virtual void OnMetadataReceived()
         {
             var handler = MetadataReceived;
             if (handler != null) handler(this, EventArgs.Empty);
