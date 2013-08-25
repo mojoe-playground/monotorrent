@@ -238,18 +238,44 @@ namespace MonoTorrent.Client
 
         public T GetPicker<T>() where T: PiecePicker
         {
-            if (picker is T)
-                return (T)picker;
+            T result;
+
+            if (CheckType(picker, out result))
+                return result;
 
             var p = picker;
             
             while ((p = p.BasePicker) != null)
             {
-                if (p is T)
-                    return (T)p;
+                if (CheckType(p, out result))
+                    return result;
             }
 
             return null;
+        }
+
+        private bool CheckType<T>(PiecePicker picker, out T obj) where T : PiecePicker
+        {
+            obj = null;
+
+            if (picker is T)
+            {
+                obj = (T)picker;
+                return true;
+            }
+            
+            if (picker is EndGameSwitcher)
+            {
+                var switcher = (EndGameSwitcher)picker;
+
+                if (switcher.ActivePicker is T)
+                {
+                    obj = (T)switcher.ActivePicker;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

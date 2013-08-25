@@ -52,6 +52,8 @@ namespace MonoTorrent.Client
     /// </summary>
     public class SlidingWindowPicker : PiecePicker
     {
+        private static readonly ILogger Logger = LogManager.GetLogger();
+
         #region Member Variables
 
         private int ratio = 4;                      // ratio from medium priority to high priority set size
@@ -178,18 +180,33 @@ namespace MonoTorrent.Client
             MessageBundle bundle;
             int start, end;
 
-            if (HighPrioritySetStart >= startIndex && HighPrioritySetStart <= endIndex)
+            // give high and medium segments only to fast peers
+            if (id.Monitor.DownloadSpeed > 200 * 1024)
             {
-                start = HighPrioritySetStart;
-                end = Math.Min(endIndex, HighPrioritySetStart + HighPrioritySetSize - 1);
-                if ((bundle = base.PickPiece(id, peerBitfield, otherPeers, count, start, end)) != null)
-                    return bundle;
+                if (HighPrioritySetStart >= startIndex && HighPrioritySetStart <= endIndex)
+                {
+                    start = HighPrioritySetStart;
+                    end = Math.Min(endIndex, HighPrioritySetStart + HighPrioritySetSize - 1);
+                    if ((bundle = base.PickPiece(id, peerBitfield, otherPeers, count, start, end)) != null)
+                        return bundle;
+                }
+
+                if (MediumPrioritySetStart >= startIndex && MediumPrioritySetStart <= endIndex)
+                {
+                    start = MediumPrioritySetStart;
+                    end = Math.Min(endIndex, MediumPrioritySetStart + MediumPrioritySetSize - 1);
+                    if ((bundle = base.PickPiece(id, peerBitfield, otherPeers, count, start, end)) != null)
+                        return bundle;
+                }
             }
 
-            if (MediumPrioritySetStart >= startIndex && MediumPrioritySetStart <= endIndex)
+            var lowPrioritySetStart = MediumPrioritySetStart + MediumPrioritySetSize;
+            var lowPrioritySetSize = MediumPrioritySetSize;
+            
+            if (lowPrioritySetStart >= startIndex && lowPrioritySetStart <= endIndex)
             {
-                start = MediumPrioritySetStart;
-                end = Math.Min(endIndex, MediumPrioritySetStart + MediumPrioritySetSize - 1);
+                start = lowPrioritySetStart;
+                end = Math.Min(endIndex, lowPrioritySetStart + lowPrioritySetSize - 1);
                 if ((bundle = base.PickPiece(id, peerBitfield, otherPeers, count, start, end)) != null)
                     return bundle;
             }

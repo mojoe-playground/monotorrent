@@ -709,7 +709,7 @@ namespace MonoTorrent.Client
             else
                 return 9;
         }
-
+        
         #endregion BitTyrant
 
         internal void TryProcessAsyncReads()
