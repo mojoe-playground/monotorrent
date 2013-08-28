@@ -26,10 +26,7 @@ namespace MonoTorrent.Client
 			ClientEngine engine = manager.Engine;
 			if (manager.Mode is HashingMode)
 				handle.AddHandle(((HashingMode)manager.Mode).hashingWaitHandle, "Hashing");
-
-			if (manager.TrackerManager.CurrentTracker != null && manager.TrackerManager.CurrentTracker.Status == TrackerState.Ok)
-				handle.AddHandle(manager.TrackerManager.Announce(TorrentEvent.Stopped), "Announcing");
-
+            
 			foreach (PeerId id in manager.Peers.ConnectedPeers)
 				if (id.Connection != null)
 					id.Connection.Dispose();
