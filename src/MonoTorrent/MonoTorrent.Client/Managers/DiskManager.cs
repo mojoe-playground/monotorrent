@@ -158,7 +158,8 @@ namespace MonoTorrent.Client
 				try
 				{
 					LoopTask();
-					writer.Close(manager.Torrent.Files);
+                    if (manager.HasMetadata)
+					    writer.Close(manager.Torrent.Files);
 				}
                 catch (Exception ex)
                 {

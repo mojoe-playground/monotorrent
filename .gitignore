@@ -3,3 +3,4 @@ src/MonoTorrent/obj/Release/MonoTorrent.csproj.FileListAbsolute.txt
 src/MonoTorrent.Dht/obj/Release/MonoTorrent.Dht.csproj.FileListAbsolute.txt
 src/MonoTorrent.Dht/obj/Debug/MonoTorrent.Dht.csproj.FileListAbsolute.txt
 src/MonoTorrent/obj/Debug/MonoTorrent.csproj.FileListAbsolute.txt
+src/MonoTorrent/obj/Stats/MonoTorrent.csproj.FileListAbsolute.txt

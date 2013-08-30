@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using MonoTorrent.Common;
 using MonoTorrent.Client.Messages;
@@ -67,10 +68,9 @@ namespace MonoTorrent.Client
 
         public IEnumerable<Piece> RequestedPieces()
         {
-            foreach (var request in requests)
-            {
-                yield return request;
-            }
+            var list = new List<Piece>();
+            ClientEngine.MainLoop.QueueWait(() => list = requests.ToList());
+            return list;
         }
 
         public override void CancelRequest(PeerId peer, int piece, int startOffset, int length)

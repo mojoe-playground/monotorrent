@@ -710,7 +710,7 @@ namespace MonoTorrent.Client
         {
             BeginStop();
 
-            while (State != TorrentState.Stopped)
+            while (State != TorrentState.Stopped && State != TorrentState.Error)
             {
                 Thread.Sleep(10);
             }
