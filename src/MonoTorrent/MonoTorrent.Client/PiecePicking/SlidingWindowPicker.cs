@@ -57,7 +57,7 @@ namespace MonoTorrent.Client
         #region Member Variables
 
         private int ratio = 4;                      // ratio from medium priority to high priority set size
-        private int highPrioritySetSize;            // size of high priority set, in pieces
+        private int highPrioritySetSize = 3;            // size of high priority set, in pieces
         // this represents the last byte played in a video player, as the high priority
         // set designates pieces that are needed VERY SOON
         private int highPrioritySetStart;           // gets updated by calling code, or as pieces get downloaded
