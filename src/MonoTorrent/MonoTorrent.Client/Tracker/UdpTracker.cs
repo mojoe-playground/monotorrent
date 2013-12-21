@@ -326,7 +326,7 @@ namespace MonoTorrent.Client.Tracker
 
            //TODO BeginSend
            byte[] buffer = requestState.Message.Encode();
-           tracker.Send(buffer, buffer.Length);
+           var sent = tracker.Send(buffer, buffer.Length);
 
            //response timeout: we try 2 times every 10 sec
            ClientEngine.MainLoop.QueueTimeout(RetryDelay, delegate
