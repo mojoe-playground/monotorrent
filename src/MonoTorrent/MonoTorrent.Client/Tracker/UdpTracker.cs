@@ -21,6 +21,7 @@ namespace MonoTorrent.Client.Tracker
        bool amConnecting;
        internal TimeSpan RetryDelay;
        int timeout;
+       IAsyncResult ReceiveAsyncResult;
 
        public UdpTracker(Uri announceUrl)
            : base(announceUrl)
@@ -38,7 +39,12 @@ namespace MonoTorrent.Client.Tracker
        {
            //LastUpdated = DateTime.Now;
            if (!hasConnected && amConnecting)
-               return;
+           {
+       	   		IAsyncResult ar = ReceiveAsyncResult;
+                if (ar != null)
+                    if (!ar.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(2)))
+                        return;
+            }
 
            if (!hasConnected)
            {
@@ -302,11 +308,12 @@ namespace MonoTorrent.Client.Tracker
        {
            timeout = 1;
            SendRequest(messageState);
-           tracker.BeginReceive(EndReceiveMessage, messageState);
+            ReceiveAsyncResult = tracker.BeginReceive(EndReceiveMessage, messageState);
        }
 
        private void EndReceiveMessage(IAsyncResult result)
        {
+            ReceiveAsyncResult = null;
            UdpTrackerAsyncState trackerState = (UdpTrackerAsyncState)result.AsyncState;
            try
            {

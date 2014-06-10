@@ -4,3 +4,10 @@ src/MonoTorrent.Dht/obj/Release/MonoTorrent.Dht.csproj.FileListAbsolute.txt
 src/MonoTorrent.Dht/obj/Debug/MonoTorrent.Dht.csproj.FileListAbsolute.txt
 src/MonoTorrent/obj/Debug/MonoTorrent.csproj.FileListAbsolute.txt
 src/MonoTorrent/obj/Stats/MonoTorrent.csproj.FileListAbsolute.txt
+DesignTimeResolveAssemblyReferencesInput.cache
+build/
+src/MonoTorrent.Dht/obj/
+src/TrackerApp/obj/
+src/SampleClient/obj/
+src/MonoTorrent/obj/
+*.suo
