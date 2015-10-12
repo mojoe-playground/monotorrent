@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using MonoTorrent.Client.Connections;
@@ -195,7 +196,7 @@ namespace MonoTorrent.Client
         {
             var handle = new ManualResetEvent (false);
             var bf = new BitField (rig.Pieces).Not ();
-            rig.Manager.LoadFastResume (new FastResume (rig.Manager.InfoHash, bf));
+            rig.Manager.LoadFastResume (new FastResume (rig.Manager.InfoHash, bf, rig.Manager.Torrent.Files.Select(f => f.Priority)));
             rig.Manager.TorrentStateChanged += (o, e) => {
                 if (rig.Manager.State == TorrentState.Downloading)
                     handle.Set ();
@@ -216,7 +217,7 @@ namespace MonoTorrent.Client
             });
             var handle = new ManualResetEvent(false);
             var bf = new BitField(rig.Pieces).Not();
-            rig.Manager.LoadFastResume(new FastResume(rig.Manager.InfoHash, bf));
+            rig.Manager.LoadFastResume(new FastResume(rig.Manager.InfoHash, bf, rig.Manager.Torrent.Files.Select(f => f.Priority)));
             rig.Manager.TorrentStateChanged += (o, e) =>
             {
                 if (rig.Manager.State == TorrentState.Downloading)
@@ -243,7 +244,7 @@ namespace MonoTorrent.Client
 
             var handle = new ManualResetEvent(false);
             var bf = new BitField(rig.Pieces).Not();
-            rig.Manager.LoadFastResume(new FastResume(rig.Manager.InfoHash, bf));
+            rig.Manager.LoadFastResume(new FastResume(rig.Manager.InfoHash, bf, rig.Manager.Torrent.Files.Select(f => f.Priority)));
             rig.Manager.TorrentStateChanged += (o, e) =>
             {
                 if (rig.Manager.State == TorrentState.Downloading)
