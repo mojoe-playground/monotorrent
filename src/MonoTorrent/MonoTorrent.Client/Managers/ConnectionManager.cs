@@ -467,7 +467,7 @@ namespace MonoTorrent.Client
                     id.TorrentManager.RaiseConnectionAttemptFailed (args);
                 }
 
-                bool maxAlreadyOpen = OpenConnections >= Math.Min(this.MaxOpenConnections, id.TorrentManager.Settings.MaxConnections);
+                bool maxAlreadyOpen = (OpenConnections >= this.MaxOpenConnections) || (id.TorrentManager.OpenConnections >= id.TorrentManager.Settings.MaxConnections);
                 if (!succeeded || id.Peer.PeerId == engine.PeerId || maxAlreadyOpen)
                 {
                     CleanupSocket (id, "Connection was not accepted");
@@ -601,8 +601,6 @@ namespace MonoTorrent.Client
 
         internal void TryConnect()
         {
-            TorrentManager m = null;
-            
             // If we have already reached our max connections globally, don't try to connect to a new peer
             while (OpenConnections < this.MaxOpenConnections && this.HalfOpenConnections < this.MaxHalfOpenConnections) {
                 // Check each torrent manager in turn to see if they have any peers we want to connect to

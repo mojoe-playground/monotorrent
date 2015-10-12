@@ -35,6 +35,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Threading;
+using System.Linq;
 using MonoTorrent.Client.Encryption;
 using MonoTorrent.Common;
 using MonoTorrent.Client.Tracker;
@@ -68,7 +69,7 @@ namespace MonoTorrent.Client
         public static readonly bool SupportsDht = false;
 #endif
         internal const int TickLength = 500;    // A logic tick will be performed every TickLength miliseconds
-       
+
         #endregion
 
 
@@ -87,8 +88,10 @@ namespace MonoTorrent.Client
 
         internal static readonly BufferManager BufferManager = new BufferManager();
         private ConnectionManager connectionManager;
-        
+
+#if !DISABLE_DHT
         private IDhtEngine dhtEngine;
+#endif
         private DiskManager diskManager;
         private bool disposed;
         private bool isRunning;
@@ -99,10 +102,13 @@ namespace MonoTorrent.Client
         private readonly string peerId;
         private EngineSettings settings;
         private int tickCount;
+        private HashSet<InfoHash> skeys;
         private List<TorrentManager> torrents;
         private ReadOnlyCollection<TorrentManager> torrentsReadonly;
         private RateLimiterGroup uploadLimiter;
         private RateLimiterGroup downloadLimiter;
+        private GlobalRateLimiter globalUploadLimiter; // wrapper around upload limiter to pass to torrent managers
+        private GlobalRateLimiter globalDownloadLimiter; // wrapper around download limiter to pass to torrent managers
 
         #endregion
 
@@ -201,7 +207,9 @@ namespace MonoTorrent.Client
             this.settings = settings;
 
             this.connectionManager = new ConnectionManager(this);
+#if !DISABLE_DHT
             RegisterDht (new NullDhtEngine());
+#endif
             this.diskManager = new DiskManager(this, writer);
             this.listenManager = new ListenManager(this);
             MainLoop.QueueTimeout(TimeSpan.FromMilliseconds(TickLength), delegate {
@@ -210,6 +218,7 @@ namespace MonoTorrent.Client
                 return !disposed;
             });
             this.torrents = new List<TorrentManager>();
+            this.skeys = new HashSet<InfoHash>();
             this.torrentsReadonly = new ReadOnlyCollection<TorrentManager> (torrents);
             CreateRateLimiters();
             this.peerId = GeneratePeerId();
@@ -229,11 +238,13 @@ namespace MonoTorrent.Client
             downloadLimiter = new RateLimiterGroup();
             downloadLimiter.Add(new DiskWriterLimiter(DiskManager));
             downloadLimiter.Add(downloader);
+            globalDownloadLimiter = new GlobalRateLimiter(downloadLimiter);
 
             RateLimiter uploader = new RateLimiter();
             uploadLimiter = new RateLimiterGroup();
             downloadLimiter.Add(new DiskWriterLimiter(DiskManager));
             uploadLimiter.Add(uploader);
+            globalUploadLimiter = new GlobalRateLimiter(uploadLimiter);
 
             ClientEngine.MainLoop.QueueTimeout(TimeSpan.FromSeconds(1), delegate {
                 downloader.UpdateChunks(Settings.GlobalMaxDownloadSpeed, TotalDownloadSpeed);
@@ -284,7 +295,7 @@ namespace MonoTorrent.Client
             CheckDisposed();
             if (manager == null)
                 return false;
-            
+
             return Contains(manager.Torrent);
         }
 
@@ -295,7 +306,10 @@ namespace MonoTorrent.Client
 
             disposed = true;
             MainLoop.QueueWait((MainLoopTask)delegate {
+#if !DISABLE_DHT
                 this.dhtEngine.Dispose();
+#endif                
+                this.listener.Stop();
                 this.diskManager.Dispose();
                 this.listenManager.Dispose();
                 this.localPeerListener.Stop();
@@ -305,11 +319,11 @@ namespace MonoTorrent.Client
 
         private static string GeneratePeerId()
         {
-            StringBuilder sb = new StringBuilder(20);
+            StringBuilder sb = new StringBuilder(InfoHash.HASH_SIZE);
 
             sb.Append(Common.VersionInfo.ClientVersion);
             lock (random)
-                while (sb.Length < 20)
+                while (sb.Length < InfoHash.HASH_SIZE)
                     sb.Append (random.Next (0, 9));
 
             return sb.ToString();
@@ -338,8 +352,11 @@ namespace MonoTorrent.Client
                 this.torrents.Add(manager);
                 manager.PieceHashed += PieceHashed;
                 manager.Engine = this;
-                manager.DownloadLimiter.Add(downloadLimiter);
-                manager.UploadLimiter.Add(uploadLimiter);
+                manager.DownloadLimiter.Add(globalDownloadLimiter);
+                manager.UploadLimiter.Add(globalUploadLimiter);
+                lock (skeys)
+                    skeys.Add(manager.InfoHash);
+#if !DISABLE_DHT
                 if (dhtEngine != null && manager.Torrent != null && manager.Torrent.Nodes != null && dhtEngine.State != DhtState.Ready)
                 {
                     try
@@ -351,12 +368,14 @@ namespace MonoTorrent.Client
                         // FIXME: Should log this somewhere, though it's not critical
                     }
                 }
+#endif
             });
 
             if (TorrentRegistered != null)
                 TorrentRegistered(this, new TorrentEventArgs(manager));
         }
 
+#if !DISABLE_DHT
         public void RegisterDht(IDhtEngine engine)
         {
             MainLoop.QueueWait(delegate
@@ -388,6 +407,7 @@ namespace MonoTorrent.Client
                 }
             });
         }
+#endif
 
         public void StartAll()
         {
@@ -406,6 +426,15 @@ namespace MonoTorrent.Client
                 for (int i = 0; i < torrents.Count; i++)
                     torrents[i].BeginStop();
             });
+        }
+
+        public InfoHash[] SKeys
+        {
+            get
+            {
+                lock (skeys)
+                    return skeys.ToArray();
+            }
         }
 
         public int TotalDownloadSpeed
@@ -430,6 +459,9 @@ namespace MonoTorrent.Client
             Check.Manager(manager);
 
             MainLoop.QueueWait((MainLoopTask)delegate {
+                if(manager.Engine == null)
+                    return;
+
                 if (manager.Engine != this)
                     throw new TorrentException("The manager has not been registered with this engine");
 
@@ -442,6 +474,8 @@ namespace MonoTorrent.Client
                 manager.Engine = null;
                 manager.DownloadLimiter.Remove(downloadLimiter);
                 manager.UploadLimiter.Remove(uploadLimiter);
+                lock (skeys)
+                    skeys.Remove(manager.InfoHash);
             });
 
             if (TorrentUnregistered != null)

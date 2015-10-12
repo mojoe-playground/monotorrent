@@ -408,7 +408,7 @@ namespace MonoTorrent.Client
             Check.BaseDirectory(baseDirectory);
 
             this.torrent = torrent;
-            this.infohash = torrent.infoHash;
+            this.infohash = torrent.InfoHash;
             this.settings = settings;
 
             Initialise(savePath, baseDirectory, torrent.AnnounceUrls);
@@ -496,6 +496,13 @@ namespace MonoTorrent.Client
 
             ClientEngine.MainLoop.QueueWait((MainLoopTask)delegate {
                 this.pieceManager.ChangePicker(picker, bitfield, torrent.Files);
+            });
+        }
+
+        public void ChangeUnchoker(IUnchoker unchoker)
+        {
+            ClientEngine.MainLoop.QueueWait((MainLoopTask)delegate {
+                this.chokeUnchoker = unchoker;
             });
         }
 
@@ -823,7 +830,7 @@ namespace MonoTorrent.Client
         
         internal void RaisePeerDisconnected(PeerConnectionEventArgs args)
         {
-			Mode.HandlePeerDisconnected(args.PeerID);
+            Mode.HandlePeerDisconnected(args.PeerID);
             Toolbox.RaiseAsyncEvent<PeerConnectionEventArgs>(PeerDisconnected, this, args);
         }
 
