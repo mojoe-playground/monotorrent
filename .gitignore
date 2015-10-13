@@ -11,3 +11,5 @@ src/TrackerApp/obj/
 src/SampleClient/obj/
 src/MonoTorrent/obj/
 *.suo
+/src/MonoTorrent.Tests/obj/Debug
+/src/packages
