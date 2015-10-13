@@ -5,6 +5,7 @@ using System.Text;
 using MonoTorrent.Common;
 using System.IO;
 using System.Threading;
+using File = Alphaleonis.Win32.Filesystem.File;
 
 namespace MonoTorrent.Client.PieceWriters
 {

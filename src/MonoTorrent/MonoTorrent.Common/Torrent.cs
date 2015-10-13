@@ -36,6 +36,7 @@ using System.Security.Cryptography;
 using MonoTorrent.BEncoding;
 using System.Collections;
 using System.Net;
+using Path = Alphaleonis.Win32.Filesystem.Path;
 
 namespace MonoTorrent.Common
 {

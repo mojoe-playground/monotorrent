@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
 using Microsoft.Win32.SafeHandles;
 using System.Threading;
 using System.Runtime.InteropServices;
+using Alphaleonis.Win32.Filesystem;
 
 namespace MonoTorrent.Client
 {
@@ -50,7 +50,7 @@ namespace MonoTorrent.Client
                 uint attributes = (uint)0x00000080;     // Normal
                 uint creation = (uint)1;                // Only create if new
 
-                using (SafeFileHandle handle = CreateFileW(filename, access, sharing, IntPtr.Zero, creation, attributes, IntPtr.Zero))
+                using (SafeFileHandle handle = CreateFileW(@"\\?\" + filename, access, sharing, IntPtr.Zero, creation, attributes, IntPtr.Zero))
                 {
                     // If we couldn't create the file, bail out
                     if (handle.IsInvalid)

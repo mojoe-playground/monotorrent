@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Security.Cryptography;
-using System.IO;
 using MonoTorrent.Common;
 using MonoTorrent.Client.Messages.Standard;
 using MonoTorrent.Client.PieceWriters;
+using Alphaleonis.Win32.Filesystem;
 
 namespace MonoTorrent.Client
 {

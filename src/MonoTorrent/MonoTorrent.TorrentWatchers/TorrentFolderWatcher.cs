@@ -29,6 +29,8 @@
 
 using System;
 using System.IO;
+using Directory = Alphaleonis.Win32.Filesystem.Directory;
+using DirectoryInfo = Alphaleonis.Win32.Filesystem.DirectoryInfo;
 
 namespace MonoTorrent.TorrentWatcher
 {
