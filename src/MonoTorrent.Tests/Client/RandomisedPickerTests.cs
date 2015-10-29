@@ -26,6 +26,7 @@ namespace MonoTorrent.Client
         {
             rig = TestRig.CreateMultiFile();
             id = new PeerId(new Peer(new string('a', 20), new Uri("tcp://BLAH")), rig.Manager);
+            id.IsChoking = false;
             for (int i = 0; i < id.BitField.Length; i += 2)
                 id.BitField[i] = true;
         }
