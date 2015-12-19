@@ -136,14 +136,15 @@ namespace MonoTorrent.Client
                 if (bitfield.AllTrue)
                     return true;
                 
-                foreach (var file in torrent.Files)
-                {
-                    if (file.Priority == Priority.DoNotDownload)
-                        continue;
+                if (torrent?.Files != null)
+                    foreach (var file in torrent.Files)
+                    {
+                        if (file.Priority == Priority.DoNotDownload)
+                            continue;
 
-                    if (bitfield.FirstFalse(file.StartPieceIndex, file.EndPieceIndex) != -1)
-                        return false;
-                }
+                        if (bitfield.FirstFalse(file.StartPieceIndex, file.EndPieceIndex) != -1)
+                            return false;
+                    }
 
                 return true;
             }
