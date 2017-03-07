@@ -84,20 +84,23 @@ namespace MonoTorrent.Client
         }
 
         [Test]
-        [ExpectedException(typeof(WebException))]
+        //[ExpectedException(typeof(WebException))]
         public void TestPartialData()
         {
             partialData = true;
-            RecieveFirst();
+			Assert.Catch<WebException>(()=>
+            RecieveFirst());
         }
 
         [Test]
-        [ExpectedException(typeof(WebException))]
+        //[ExpectedException(typeof(WebException))]
         public void TestInactiveServer()
         {
             connection.ConnectionTimeout = TimeSpan.FromMilliseconds(100);
+			Assert.Catch<WebException>(()=> { 
             listener.Stop();
             RecieveFirst();
+			});
         }
 
         [Test]

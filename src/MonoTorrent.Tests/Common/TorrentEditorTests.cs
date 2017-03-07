@@ -28,19 +28,23 @@ namespace MonoTorrent.Common
         }
 
         [Test]
-        [ExpectedException (typeof (InvalidOperationException))]
+        //[ExpectedException (typeof (InvalidOperationException))]
         public void ReplaceInfoDict ()
         {
+			Assert.Catch<InvalidOperationException>(()=> {
             var editor = new TorrentEditor (new BEncodedDictionary ()) { CanEditSecureMetadata = false };
             editor.SetCustom ("info", new BEncodedDictionary ());
+			});
         }
 
         [Test]
-        [ExpectedException (typeof (InvalidOperationException))]
+        //[ExpectedException (typeof (InvalidOperationException))]
         public void EditProtectedProperty_NotAllowed ()
         {
+			Assert.Catch<InvalidOperationException>(()=> {
             var editor = new TorrentEditor (new BEncodedDictionary ()) { CanEditSecureMetadata = false };
             editor.PieceLength = 16;
+			});
         }
 
         BEncodedDictionary Create (string key, string value)

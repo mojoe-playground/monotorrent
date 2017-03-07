@@ -83,16 +83,20 @@ namespace MonoTorrent.Client
         }
 
         [Test]
-        [ExpectedException(typeof(EncryptionException))]
+        //[ExpectedException(typeof(EncryptionException))]
         public void Full_HeaderTestNoInitial()
         {
-            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.RC4Header, false);
+			Assert.Catch<EncryptionException>(()=>
+            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.RC4Header, false)
+			);
         }
         [Test]
-        [ExpectedException(typeof(EncryptionException))]
+        //[ExpectedException(typeof(EncryptionException))]
         public void Full_HeaderTestInitial()
         {
-            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.RC4Header, true);
+			Assert.Catch<EncryptionException>(()=>
+            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.RC4Header, true)
+			);
         }
 
         [Test]
@@ -107,16 +111,20 @@ namespace MonoTorrent.Client
         }
 
         [Test]
-        [ExpectedException(typeof(EncryptionException))]
+        //[ExpectedException(typeof(EncryptionException))]
         public void Full_NoneTestNoInitial()
         {
-            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.PlainText, false);
+			Assert.Catch<EncryptionException>(()=>
+            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.PlainText, false)
+			);
         }
         [Test]
-        [ExpectedException(typeof(EncryptionException))]
+        //[ExpectedException(typeof(EncryptionException))]
         public void Full_NoneTestInitial()
         {
-            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.PlainText, true);
+			Assert.Catch<EncryptionException>(()=>
+            Handshake(EncryptionTypes.RC4Full, EncryptionTypes.PlainText, true)
+			);
         }
 
         [Test]
