@@ -107,14 +107,15 @@ namespace MonoTorrent.Client
             EncodeDecode(msg);
         }
 
-        [ExpectedException(typeof(MessageException))]
+        //[ExpectedException(typeof(MessageException))]
         [Ignore("Deliberately broken to work around bugs in azureus")]
         public void BitfieldCorrupt()
         {
             bool[] data = new bool[] { true, false, false, true, false, true, false, true, false, true, false, true, false, false, false, true };
             byte[] encoded = new BitfieldMessage(new BitField(data)).Encode();
-
-            PeerMessage.DecodeMessage(encoded, 0, encoded.Length, testRig.Manager);
+			Assert.Catch<MessageException>(()=>
+            PeerMessage.DecodeMessage(encoded, 0, encoded.Length, testRig.Manager)
+			);
         }
 
 

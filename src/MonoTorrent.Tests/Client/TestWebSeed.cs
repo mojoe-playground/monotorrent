@@ -84,20 +84,23 @@ namespace MonoTorrent.Client
         }
 
         [Test]
-        [ExpectedException(typeof(WebException))]
+        //[ExpectedException(typeof(WebException))]
         public void TestPartialData()
         {
             partialData = true;
-            RecieveFirst();
+			Assert.Catch<WebException>(()=>
+            RecieveFirst());
         }
 
         [Test]
-        [ExpectedException(typeof(WebException))]
+        //[ExpectedException(typeof(WebException))]
         public void TestInactiveServer()
         {
             connection.ConnectionTimeout = TimeSpan.FromMilliseconds(100);
+			Assert.Catch<WebException>(()=> { 
             listener.Stop();
             RecieveFirst();
+			});
         }
 
         [Test]
@@ -221,7 +224,7 @@ namespace MonoTorrent.Client
                 Match match = null;
                 string range = c.Request.Headers["range"];
 
-                if (!(range != null && (match = rangeMatcher.Match(range)) != null))
+                if (!(range != null && (match = rangeMatcher.Match(range)).Success))
                     Assert.Fail("No valid range specified");
 
                 int start = int.Parse(match.Groups[1].Captures[0].Value);

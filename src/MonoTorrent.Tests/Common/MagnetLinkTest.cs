@@ -51,39 +51,48 @@ namespace MonoTorrent.Common
         }
 
         [Test]
-        [ExpectedException(typeof(FormatException))]
+        //[ExpectedException(typeof(FormatException))]
         public void InvalidMagnetLink()
         {
+			Assert.Catch<FormatException>(()=> {
             InfoHash hash = Create();
             string magnet = string.Format("magnet?xt=urn:btih:{0}", hash.ToHex());
             MagnetLink other = new MagnetLink(magnet);
             Assert.AreEqual(hash, other.InfoHash, "#1");
+			});
         }
 
-        [Test, ExpectedException(typeof (FormatException))]
+        [Test]
+		//[ExpectedException(typeof (FormatException))]
         public void InvalidMagnetLink3()
         {
+			Assert.Catch<FormatException>(()=> {
             InfoHash hash = Create();
             string magnet = string.Format("magnet:?xt=urn:btih:", hash.ToHex());
             MagnetLink other = new MagnetLink(magnet);
             Assert.AreEqual(hash, other.InfoHash, "#1");
+			});
         }
 
         [Test]
-        [ExpectedException (typeof(FormatException))]
+        //[ExpectedException (typeof(FormatException))]
         public void InvalidMagnetLink4()
         {
+			Assert.Catch<FormatException>(()=> {
             InfoHash hash = Create();
             string magnet = string.Format("magnet:?xt=urn:btih:23526246235623564234365879634581726345981", hash.ToHex());
             MagnetLink other = new MagnetLink(magnet);
             Assert.AreEqual(hash, other.InfoHash, "#1");
+			});
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        //[ExpectedException(typeof(ArgumentNullException))]
         public void NullMagnetLink()
         {
+			Assert.Catch<ArgumentNullException>(()=> {
             new MagnetLink(null);
+			});
         }
 
         [Test]
