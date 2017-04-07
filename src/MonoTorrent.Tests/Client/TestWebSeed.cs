@@ -34,7 +34,7 @@ namespace MonoTorrent.Client
         HttpConnection connection;
         HttpListener listener;
         //private RequestMessage m;
-        private string listenerURL = "http://127.0.0.1:120/announce/";
+        private string listenerURL = "http://127.0.0.1:5800/announce/";
         int amountSent;
 
         PeerId id;
