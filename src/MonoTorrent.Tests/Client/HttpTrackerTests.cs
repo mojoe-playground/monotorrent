@@ -90,7 +90,7 @@ namespace MonoTorrent.Client
             Wait(id.WaitHandle);
             Assert.IsNotNull(p, "#1");
             Assert.IsTrue(p.Successful);
-            Assert.AreEqual(keys[0], t.Key, "#2");
+            Assert.AreEqual(keys[0].ToLowerInvariant(), t.Key.ToLowerInvariant(), "#2");
         }
 
         [Test]
