@@ -497,9 +497,9 @@ namespace MonoTorrent.Client
             AddAnnounces(dict, tier);
             AddFiles(infoDict, files);
             if (files.Length == 1)
-                dict["url-list"] = (BEncodedString)"http://127.0.0.1:120/announce/File1.exe";
+                dict["url-list"] = (BEncodedString)"http://127.0.0.1:5800/announce/File1.exe";
             else
-                dict["url-list"] = (BEncodedString)"http://127.0.0.1:120/announce";
+                dict["url-list"] = (BEncodedString)"http://127.0.0.1:5800/announce";
             dict["creation date"] = (BEncodedNumber)(int)(DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds;
             dict["encoding"] = (BEncodedString)"UTF-8";
             dict["info"] = infoDict;
