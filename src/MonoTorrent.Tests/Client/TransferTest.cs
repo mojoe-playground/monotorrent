@@ -196,6 +196,10 @@ namespace MonoTorrent.Client
             ReceiveMessage(connection);
             ReceiveMessage(connection);
             ReceiveMessage(connection);
+
+            // 6) Receive interested
+            message = ReceiveMessage(connection);
+            Assert.IsTrue(message is InterestedMessage, "Interested");
         }
 
         public static void Send(CustomConnection connection, byte[] buffer, int offset, int count)
