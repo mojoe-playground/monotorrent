@@ -97,15 +97,15 @@ namespace MonoTorrent.Client
         [Test]
         public void SendMetadata_ToFile()
         {
-            Setup(true, "file.torrent");
-            SendMetadataCore("file.torrent");
+            Setup(true, Path.Combine(Path.GetTempPath(), "file.torrent"));
+            SendMetadataCore(Path.Combine(Path.GetTempPath(), "file.torrent"));
         }
 
         [Test]
         public void SendMetadata_ToFolder()
         {
-            Setup(true, Environment.CurrentDirectory);
-            SendMetadataCore(Path.Combine(Environment.CurrentDirectory, rig.Torrent.InfoHash.ToHex () + ".torrent"));
+            Setup(true, Path.GetTempPath());
+            SendMetadataCore(Path.Combine(Path.GetTempPath(), rig.Torrent.InfoHash.ToHex () + ".torrent"));
         }
 
         public void SendMetadataCore (string expectedPath)

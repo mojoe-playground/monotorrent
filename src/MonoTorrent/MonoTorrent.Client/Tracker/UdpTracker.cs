@@ -29,7 +29,8 @@ namespace MonoTorrent.Client.Tracker
            CanScrape = true;
            CanAnnounce = true;
            RetryDelay = TimeSpan.FromSeconds(10);
-           tracker = new UdpClient(announceUrl.Host, announceUrl.Port);
+           tracker = new UdpClient();
+           tracker.Connect(announceUrl.Host, announceUrl.Port);
            endpoint = (IPEndPoint)tracker.Client.RemoteEndPoint;
        }
 
